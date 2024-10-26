@@ -1,0 +1,164 @@
+--ROW-LEVEL TRIGGERS
+--Track user registration details
+CREATE OR REPLACE TRIGGER trg_log_new_user
+AFTER INSERT ON Users
+FOR EACH ROW
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('New user registered: ' || :NEW.Name || 
+                        ' with email: ' || :NEW.Email);
+END;
+/
+--Update seat availability after booking
+CREATE OR REPLACE TRIGGER trg_update_seat_status
+AFTER INSERT ON Ticket
+FOR EACH ROW
+BEGIN
+    UPDATE Seat
+    SET Availability = 'N'
+    WHERE SeatID = :NEW.SeatID;
+    DBMS_OUTPUT.PUT_LINE('Seat ' || :NEW.SeatID || ' marked as booked');
+END;
+/
+
+
+
+
+--STATEMENT-LEVEL TRIGGERS
+--Check business hours for bookings
+CREATE OR REPLACE TRIGGER trg_business_hours_check
+BEFORE INSERT OR UPDATE ON Booking
+BEGIN
+    IF TO_NUMBER(TO_CHAR(SYSDATE, 'HH24')) NOT BETWEEN 9 AND 22 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Bookings allowed only between 9 AM and 10 PM');
+    END IF;
+END;
+/
+--Log daily event count
+CREATE OR REPLACE TRIGGER trg_daily_event_count
+AFTER INSERT ON Events
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Events
+    WHERE TRUNC(EventDate) = TRUNC(SYSDATE);
+    DBMS_OUTPUT.PUT_LINE('Total events scheduled for today: ' || v_count);
+END;
+/
+
+
+
+
+--SET-ORIENTED TRIGGERS
+--Monitor venue capacity
+CREATE OR REPLACE TRIGGER trg_check_venue_capacity
+BEFORE INSERT ON Booking
+FOR EACH ROW
+DECLARE
+    v_current_bookings NUMBER;
+    v_venue_capacity NUMBER;
+    v_venue_id NUMBER;
+BEGIN
+    -- Get venue ID for the event
+    SELECT VenueID INTO v_venue_id
+    FROM Events
+    WHERE EventID = :NEW.EventID;
+    -- Get venue capacity
+    SELECT Capacity INTO v_venue_capacity
+    FROM Venue
+    WHERE VenueID = v_venue_id;
+    -- Count current bookings
+    SELECT COUNT(*) INTO v_current_bookings
+    FROM Booking b
+    WHERE b.EventID = :NEW.EventID
+    AND b.BookingStatus = 'Confirmed';
+    IF v_current_bookings >= v_venue_capacity THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Venue capacity exceeded');
+    END IF;
+END;
+/
+--Track multiple ticket bookings
+CREATE OR REPLACE TRIGGER trg_multiple_tickets_check
+BEFORE INSERT ON Ticket
+FOR EACH ROW
+DECLARE
+    v_ticket_count NUMBER;
+BEGIN
+    -- Count tickets for this booking
+    SELECT COUNT(*) INTO v_ticket_count
+    FROM Ticket
+    WHERE BookingID = :NEW.BookingID;
+    IF v_ticket_count >= 10 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Maximum 10 tickets per booking allowed');
+    END IF;
+END;
+/
+
+
+
+
+--BEFORE TRIGGERS
+--Validate event dates
+CREATE OR REPLACE TRIGGER trg_validate_event_date
+BEFORE INSERT OR UPDATE ON Events
+FOR EACH ROW
+BEGIN
+    IF :NEW.EventDate < TRUNC(SYSDATE) THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Event date cannot be in the past');
+    END IF;
+    IF :NEW.EventDate > ADD_MONTHS(SYSDATE, 6) THEN
+        RAISE_APPLICATION_ERROR(-20005, 'Cannot schedule events more than 6 months ahead');
+    END IF;
+END;
+/
+--Set default payment status
+CREATE OR REPLACE TRIGGER trg_set_payment_defaults
+BEFORE INSERT ON Payment
+FOR EACH ROW
+BEGIN
+    IF :NEW.PaymentDate IS NULL THEN
+        :NEW.PaymentDate := SYSDATE;
+    END IF;
+    IF :NEW.PaymentTime IS NULL THEN
+        :NEW.PaymentTime := SYSTIMESTAMP;
+    END IF;
+    DBMS_OUTPUT.PUT_LINE('Payment defaults set for payment ID: ' || :NEW.PaymentID);
+END;
+/
+
+
+
+
+--AFTER TRIGGERS
+--Display booking confirmation
+CREATE OR REPLACE TRIGGER trg_booking_confirmation
+AFTER INSERT ON Booking
+FOR EACH ROW
+DECLARE
+    v_event_title Events.Title%TYPE;
+BEGIN
+    SELECT Title INTO v_event_title
+    FROM Events
+    WHERE EventID = :NEW.EventID;
+    DBMS_OUTPUT.PUT_LINE('Booking Confirmed!' || CHR(10) ||
+                        'Booking ID: ' || :NEW.BookingID || CHR(10) ||
+                        'Event: ' || v_event_title || CHR(10) ||
+                        'Amount: ₹' || :NEW.TotalAmount);
+END;
+/
+--Monitor payment status
+CREATE OR REPLACE TRIGGER trg_payment_monitor
+AFTER INSERT ON Payment
+FOR EACH ROW
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(
+        CASE :NEW.Status
+            WHEN 'Success' THEN 
+                'Payment of ₹' || :NEW.Amount || ' successful via ' || :NEW.PaymentMethod
+            ELSE 
+                'Payment of ₹' || :NEW.Amount || ' failed. Please retry.'
+        END
+    );
+END;
+/
