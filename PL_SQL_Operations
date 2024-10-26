@@ -1,5 +1,5 @@
---ROW-LEVEL TRIGGERS
---Track user registration details
+-- ROW-LEVEL TRIGGERS
+-- Track user registration details
 CREATE OR REPLACE TRIGGER trg_log_new_user
 AFTER INSERT ON Users
 FOR EACH ROW
@@ -8,7 +8,7 @@ BEGIN
                         ' with email: ' || :NEW.Email);
 END;
 /
---Update seat availability after booking
+-- Update seat availability after booking
 CREATE OR REPLACE TRIGGER trg_update_seat_status
 AFTER INSERT ON Ticket
 FOR EACH ROW
@@ -23,8 +23,8 @@ END;
 
 
 
---STATEMENT-LEVEL TRIGGERS
---Check business hours for bookings
+-- STATEMENT-LEVEL TRIGGERS
+-- Check business hours for bookings
 CREATE OR REPLACE TRIGGER trg_business_hours_check
 BEFORE INSERT OR UPDATE ON Booking
 BEGIN
@@ -33,7 +33,7 @@ BEGIN
     END IF;
 END;
 /
---Log daily event count
+-- Log daily event count
 CREATE OR REPLACE TRIGGER trg_daily_event_count
 AFTER INSERT ON Events
 DECLARE
@@ -50,8 +50,8 @@ END;
 
 
 
---SET-ORIENTED TRIGGERS
---Monitor venue capacity
+-- SET-ORIENTED TRIGGERS
+-- Monitor venue capacity
 CREATE OR REPLACE TRIGGER trg_check_venue_capacity
 BEFORE INSERT ON Booking
 FOR EACH ROW
@@ -78,7 +78,7 @@ BEGIN
     END IF;
 END;
 /
---Track multiple ticket bookings
+-- Track multiple ticket bookings
 CREATE OR REPLACE TRIGGER trg_multiple_tickets_check
 BEFORE INSERT ON Ticket
 FOR EACH ROW
@@ -98,8 +98,8 @@ END;
 
 
 
---BEFORE TRIGGERS
---Validate event dates
+-- BEFORE TRIGGERS
+-- Validate event dates
 CREATE OR REPLACE TRIGGER trg_validate_event_date
 BEFORE INSERT OR UPDATE ON Events
 FOR EACH ROW
@@ -112,7 +112,7 @@ BEGIN
     END IF;
 END;
 /
---Set default payment status
+-- Set default payment status
 CREATE OR REPLACE TRIGGER trg_set_payment_defaults
 BEFORE INSERT ON Payment
 FOR EACH ROW
@@ -130,8 +130,8 @@ END;
 
 
 
---AFTER TRIGGERS
---Display booking confirmation
+-- AFTER TRIGGERS
+-- Display booking confirmation
 CREATE OR REPLACE TRIGGER trg_booking_confirmation
 AFTER INSERT ON Booking
 FOR EACH ROW
@@ -147,7 +147,7 @@ BEGIN
                         'Amount: ₹' || :NEW.TotalAmount);
 END;
 /
---Monitor payment status
+-- Monitor payment status
 CREATE OR REPLACE TRIGGER trg_payment_monitor
 AFTER INSERT ON Payment
 FOR EACH ROW
