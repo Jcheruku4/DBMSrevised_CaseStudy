@@ -25,7 +25,7 @@ CREATE TABLE Events (
     EventTime TIMESTAMP NOT NULL,
     OrganizerID NUMBER NOT NULL,
     VenueID NUMBER NOT NULL,
-    Status VARCHAR2(10) CHECK (Status IN ('Active', 'Cancelled', 'Sold Out')) NOT NULL,
+    Status VARCHAR2(10) CHECK (Status IN ('Active', 'Cancelled')) NOT NULL,
     FOREIGN KEY (OrganizerID) REFERENCES Users(UserID),
     FOREIGN KEY (VenueID) REFERENCES Venue(VenueID),
     CONSTRAINT unique_event UNIQUE (Title, EventDate, EventTime, VenueID)
