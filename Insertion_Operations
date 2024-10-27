@@ -1,0 +1,166 @@
+-- Regular Users
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (1, 'Alice', 'alice@example.com', '1234567890', 'password123', 'Regular');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (2, 'Bob', 'bob@example.com', '1234567891', 'password123', 'Regular');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (3, 'Charlie', 'charlie@example.com', '1234567892', 'password123', 'Regular');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (4, 'Diana', 'diana@example.com', '1234567893', 'password123', 'Regular');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (5, 'Evan', 'evan@example.com', '1234567894', 'password123', 'Regular');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (6, 'Fiona', 'fiona@example.com', '1234567895', 'password123', 'Regular');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (7, 'George', 'george@example.com', '1234567896', 'password123', 'Regular');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (8, 'Hannah', 'hannah@example.com', '1234567897', 'password123', 'Regular');
+-- Organizers
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (9, 'Ivy', 'ivy@example.com', '1234567898', 'password123', 'Organizer');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (10, 'Jake', 'jake@example.com', '1234567899', 'password123', 'Organizer');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (11, 'Kara', 'kara@example.com', '1234567800', 'password123', 'Organizer');
+INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (12, 'Liam', 'liam@example.com', '1234567801', 'password123', 'Organizer');
+
+
+
+
+-- Venue Sample Inputs
+INSERT INTO Venue (VenueID, Name, Location, Capacity, SeatingLayout) 
+VALUES (1, 'Grand Theater', '123 Main St, Cityville', 500, 'Standard Seating Layout with VIP section');
+INSERT INTO Venue (VenueID, Name, Location, Capacity, SeatingLayout) 
+VALUES (2, 'Skyline Arena', '456 Broadway Ave, Metropolis', 750, 'Arena Layout with central stage and VIP seating');
+
+
+
+
+-- Event Sample Inputs
+INSERT INTO Events (EventID, Title, Description, Category, EventDate, EventTime, OrganizerID, VenueID, Status) 
+VALUES (1, 'Movie Night: Adventure', 'A thrilling adventure movie night.', 'Movie', TO_DATE('2024-11-01', 'YYYY-MM-DD'), TO_TIMESTAMP('2024-11-01 19:00:00', 'YYYY-MM-DD HH24:MI:SS'), 9, 1, 'Active');
+INSERT INTO Events (EventID, Title, Description, Category, EventDate, EventTime, OrganizerID, VenueID, Status) 
+VALUES (2, 'Movie Night: Adventure', 'A thrilling adventure movie night.', 'Movie', TO_DATE('2024-11-02', 'YYYY-MM-DD'), TO_TIMESTAMP('2024-11-02 19:00:00', 'YYYY-MM-DD HH24:MI:SS'), 10, 2, 'Active');
+INSERT INTO Events (EventID, Title, Description, Category, EventDate, EventTime, OrganizerID, VenueID, Status) 
+VALUES (3, 'Live Concert: Rock Legends', 'A night with the best rock legends.', 'Concert', TO_DATE('2024-11-03', 'YYYY-MM-DD'), TO_TIMESTAMP('2024-11-03 20:00:00', 'YYYY-MM-DD HH24:MI:SS'), 11, 1, 'Active');
+INSERT INTO Events (EventID, Title, Description, Category, EventDate, EventTime, OrganizerID, VenueID, Status) 
+VALUES (4, 'Live Concert: Rock Legends', 'A night with the best rock legends.', 'Concert', TO_DATE('2024-11-04', 'YYYY-MM-DD'), TO_TIMESTAMP('2024-11-04 20:00:00', 'YYYY-MM-DD HH24:MI:SS'), 12, 2, 'Active');
+INSERT INTO Events (EventID, Title, Description, Category, EventDate, EventTime, OrganizerID, VenueID, Status) 
+VALUES (5, 'Theater Play: A Midsummer Night''s Dream', 'A magical play for the whole family.', 'Play', TO_DATE('2024-11-05', 'YYYY-MM-DD'), TO_TIMESTAMP('2024-11-05 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), 9, 1, 'Active');
+INSERT INTO Events (EventID, Title, Description, Category, EventDate, EventTime, OrganizerID, VenueID, Status) 
+VALUES (6, 'Theater Play: A Midsummer Night''s Dream', 'A magical play for the whole family.', 'Play', TO_DATE('2024-11-06', 'YYYY-MM-DD'), TO_TIMESTAMP('2024-11-06 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), 10, 2, 'Active');
+INSERT INTO Events (EventID, Title, Description, Category, EventDate, EventTime, OrganizerID, VenueID, Status) 
+VALUES (7, 'Sports Event: City Cup', 'Exciting city cup matches!', 'Sports', TO_DATE('2024-11-07', 'YYYY-MM-DD'), TO_TIMESTAMP('2024-11-07 15:00:00', 'YYYY-MM-DD HH24:MI:SS'), 11, 1, 'Active');
+INSERT INTO Events (EventID, Title, Description, Category, EventDate, EventTime, OrganizerID, VenueID, Status) 
+VALUES (8, 'Sports Event: City Cup', 'Exciting city cup matches!', 'Sports', TO_DATE('2024-11-08', 'YYYY-MM-DD'), TO_TIMESTAMP('2024-11-08 15:00:00', 'YYYY-MM-DD HH24:MI:SS'), 12, 2, 'Active');
+
+
+
+
+-- Seat Sample Inputs for Grand Theater
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (1, 1, 'R1S1', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (2, 1, 'R1S2', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (3, 1, 'R1S3', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (4, 1, 'R1S4', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (5, 1, 'R1S5', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (6, 1, 'R1S6', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (7, 1, 'V1S1', 'VIP', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (8, 1, 'V1S2', 'VIP', 'Y');
+-- Seat Sample Inputs for Skyline Arena
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (9, 2, 'R2S1', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (10, 2, 'R2S2', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (11, 2, 'R2S3', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (12, 2, 'R2S4', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (13, 2, 'R2S5', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (14, 2, 'R2S6', 'Regular', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (15, 2, 'V2S1', 'VIP', 'Y');
+INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
+VALUES (16, 2, 'V2S2', 'VIP', 'Y');
+
+
+
+
+-- Booking Sample Inputs
+INSERT INTO Booking (BookingID, UserID, EventID, BookingDate, BookingStatus, TotalAmount) 
+VALUES (1, 1, 1, SYSDATE, 'Confirmed', 15.00);
+INSERT INTO Booking (BookingID, UserID, EventID, BookingDate, BookingStatus, TotalAmount) 
+VALUES (2, 2, 2, SYSDATE, 'Confirmed', 15.00);
+INSERT INTO Booking (BookingID, UserID, EventID, BookingDate, BookingStatus, TotalAmount) 
+VALUES (3, 3, 3, SYSDATE, 'Confirmed', 20.00);
+INSERT INTO Booking (BookingID, UserID, EventID, BookingDate, BookingStatus, TotalAmount) 
+VALUES (4, 4, 4, SYSDATE, 'Confirmed', 20.00);
+INSERT INTO Booking (BookingID, UserID, EventID, BookingDate, BookingStatus, TotalAmount) 
+VALUES (5, 5, 5, SYSDATE, 'Confirmed', 12.00);
+INSERT INTO Booking (BookingID, UserID, EventID, BookingDate, BookingStatus, TotalAmount) 
+VALUES (6, 6, 6, SYSDATE, 'Confirmed', 12.00);
+INSERT INTO Booking (BookingID, UserID, EventID, BookingDate, BookingStatus, TotalAmount) 
+VALUES (7, 7, 7, SYSDATE, 'Confirmed', 25.00);
+INSERT INTO Booking (BookingID, UserID, EventID, BookingDate, BookingStatus, TotalAmount) 
+VALUES (8, 8, 8, SYSDATE, 'Confirmed', 25.00);
+
+
+
+
+-- Ticket Sample Inputs
+INSERT INTO Ticket (TicketID, EventID, SeatID, Price, QRCode, BookingID) 
+VALUES (1, 1, 1, 15.00, 'QR001', 1);
+INSERT INTO Ticket (TicketID, EventID, SeatID, Price, QRCode, BookingID) 
+VALUES (2, 2, 2, 15.00, 'QR002', 2);
+INSERT INTO Ticket (TicketID, EventID, SeatID, Price, QRCode, BookingID) 
+VALUES (3, 3, 3, 20.00, 'QR003', 3);
+INSERT INTO Ticket (TicketID, EventID, SeatID, Price, QRCode, BookingID) 
+VALUES (4, 4, 4, 20.00, 'QR004', 4);
+INSERT INTO Ticket (TicketID, EventID, SeatID, Price, QRCode, BookingID) 
+VALUES (5, 5, 5, 12.00, 'QR005', 5);
+INSERT INTO Ticket (TicketID, EventID, SeatID, Price, QRCode, BookingID) 
+VALUES (6, 6, 6, 12.00, 'QR006', 6);
+INSERT INTO Ticket (TicketID, EventID, SeatID, Price, QRCode, BookingID) 
+VALUES (7, 7, 7, 25.00, 'QR007', 7);
+INSERT INTO Ticket (TicketID, EventID, SeatID, Price, QRCode, BookingID) 
+VALUES (8, 8, 8, 25.00, 'QR008', 8);
+
+
+
+
+-- Payment Sample Inputs
+INSERT INTO Payment (PaymentID, BookingID, Amount, PaymentMethod, Status, PaymentDate, PaymentTime) 
+VALUES (1, 1, 15.00, 'CreditCard', 'Success', SYSDATE, SYSTIMESTAMP);
+INSERT INTO Payment (PaymentID, BookingID, Amount, PaymentMethod, Status, PaymentDate, PaymentTime) 
+VALUES (2, 2, 15.00, 'DebitCard', 'Success', SYSDATE, SYSTIMESTAMP);
+INSERT INTO Payment (PaymentID, BookingID, Amount, PaymentMethod, Status, PaymentDate, PaymentTime) 
+VALUES (3, 3, 20.00, 'Wallet', 'Success', SYSDATE, SYSTIMESTAMP);
+INSERT INTO Payment (PaymentID, BookingID, Amount, PaymentMethod, Status, PaymentDate, PaymentTime) 
+VALUES (4, 4, 20.00, 'UPI', 'Failed', SYSDATE, SYSTIMESTAMP);
+INSERT INTO Payment (PaymentID, BookingID, Amount, PaymentMethod, Status, PaymentDate, PaymentTime) 
+VALUES (5, 5, 12.00, 'CreditCard', 'Success', SYSDATE, SYSTIMESTAMP);
+INSERT INTO Payment (PaymentID, BookingID, Amount, PaymentMethod, Status, PaymentDate, PaymentTime) 
+VALUES (6, 6, 12.00, 'DebitCard', 'Success', SYSDATE, SYSTIMESTAMP);
+INSERT INTO Payment (PaymentID, BookingID, Amount, PaymentMethod, Status, PaymentDate, PaymentTime) 
+VALUES (7, 7, 25.00, 'Wallet', 'Success', SYSDATE, SYSTIMESTAMP);
+INSERT INTO Payment (PaymentID, BookingID, Amount, PaymentMethod, Status, PaymentDate, PaymentTime) 
+VALUES (8, 8, 25.00, 'UPI', 'Failed', SYSDATE, SYSTIMESTAMP);
+
+
+
+
+-- CustomerSupport sample Inputs
+INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
+VALUES (1, 1, 'Feedback on the booking process.', SYSDATE, 'Resolved', 'Great experience!');
+INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
+VALUES (2, 2, 'Feedback on seat availability.', SYSDATE, 'Resolved', 'Seats were available as expected.');
+INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
+VALUES (3, 3, 'Query regarding event timings.', SYSDATE, 'Resolved', 'Timing was perfect!');
+INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
+VALUES (4, 4, 'Issue with booking confirmation.', SYSDATE, 'Resolved', 'Confirmation was received.');
+INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
+VALUES (5, 5, 'Query about VIP seating.', SYSDATE, 'Resolved', 'Information was helpful.');
+INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
+VALUES (6, 6, 'Feedback on payment process.', SYSDATE, 'Resolved', 'Smooth payment process.');
+INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
+VALUES (7, 7, 'Issue with UPI payment failure.', SYSDATE, 'Pending', NULL);
+INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
+VALUES (8, 8, 'Query regarding show cancellation.', SYSDATE, 'Resolved', 'Got the information I needed.');
