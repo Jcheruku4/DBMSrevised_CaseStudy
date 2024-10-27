@@ -1,8 +1,93 @@
-SELECT * FROM Users;
-SELECT * FROM Venue;
-SELECT * FROM Events;
-SELECT * FROM Seat;
-SELECT * FROM Booking;
-SELECT * FROM Ticket;
-SELECT * FROM Payment;
-SELECT * FROM CustomerSupport;
+-- User Booking Overview
+CREATE VIEW UserBookingOverview AS
+SELECT 
+    U.UserID,
+    U.Name AS UserName,
+    E.Title AS EventTitle,
+    B.BookingDate,
+    B.TotalAmount,
+    B.BookingStatus
+FROM 
+    Users U
+JOIN 
+    Booking B ON U.UserID = B.UserID
+JOIN 
+    Events E ON B.EventID = E.EventID;
+
+-- Event Details with Venue
+CREATE VIEW EventDetailsWithVenue AS
+SELECT 
+    E.EventID,
+    E.Title AS EventTitle,
+    E.Description,
+    E.EventDate,
+    E.EventTime,
+    V.Name AS VenueName,
+    V.Location AS VenueLocation
+FROM 
+    Events E
+JOIN 
+    Venue V ON E.VenueID = V.VenueID;
+
+-- Booking Summary
+CREATE VIEW BookingSummary AS
+SELECT 
+    E.EventID,
+    E.Title AS EventTitle,
+    COUNT(B.BookingID) AS TotalBookings,
+    SUM(B.TotalAmount) AS TotalRevenue
+FROM 
+    Events E
+LEFT JOIN 
+    Booking B ON E.EventID = B.EventID
+GROUP BY 
+    E.EventID, E.Title;
+
+-- Payment Status Overview
+CREATE VIEW PaymentStatusOverview AS
+SELECT 
+    P.PaymentID,
+    B.BookingID,
+    P.Amount,
+    P.PaymentMethod,
+    P.Status AS PaymentStatus,
+    P.PaymentDate,
+    P.PaymentTime
+FROM 
+    Payment P
+JOIN 
+    Booking B ON P.BookingID = B.BookingID;
+
+-- Customer Support Tickets
+CREATE VIEW CustomerSupportTickets AS
+SELECT 
+    CS.SupportID,
+    U.Name AS UserName,
+    CS.IssueDescription,
+    CS.IssueDate,
+    CS.ResolutionStatus,
+    CS.Feedback
+FROM 
+    CustomerSupport CS
+JOIN 
+    Users U ON CS.UserID = U.UserID;
+
+-- Seats Availability by Venue
+CREATE VIEW SeatsAvailabilityByVenue AS
+SELECT 
+    V.VenueID,
+    V.Name AS VenueName,
+    S.SeatNumber,
+    S.Category,
+    S.Availability
+FROM 
+    Venue V
+JOIN 
+    Seat S ON V.VenueID = S.VenueID;
+
+-- Commands to View Each Table
+SELECT * FROM UserBookingOverview;
+SELECT * FROM EventDetailsWithVenue;
+SELECT * FROM BookingSummary;
+SELECT * FROM PaymentStatusOverview;
+SELECT * FROM CustomerSupportTickets;
