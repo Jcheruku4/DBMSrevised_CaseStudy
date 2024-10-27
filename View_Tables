@@ -1,4 +1,3 @@
--- User Booking Overview
 CREATE VIEW UserBookingOverview AS
 SELECT 
     U.UserID,
@@ -20,7 +19,6 @@ SELECT * FROM UserBookingOverview;
 
 
 
--- Event Details with Venue
 CREATE VIEW EventDetailsWithVenue AS
 SELECT 
     E.EventID,
@@ -43,7 +41,6 @@ SELECT * FROM EventDetailsWithVenue;
 
 
 
--- Booking Summary
 CREATE VIEW BookingSummary AS
 SELECT 
     E.EventID,
@@ -63,15 +60,13 @@ SELECT * FROM BookingSummary;
 
 
 
--- Payment Status Overview
 CREATE VIEW PaymentStatusOverview AS
 SELECT 
     P.PaymentID,
     B.BookingID,
     U.Name AS UserName,
     U.Email AS UserEmail,
-    P.Amount,
-    P.PaymentMethod,
+    P.Amount, P.PaymentMethod,
     P.Status AS PaymentStatus,
     P.PaymentDate,
     P.PaymentTime
@@ -86,7 +81,6 @@ SELECT * FROM PaymentStatusOverview;
 
 
 
--- Customer Support Tickets
 CREATE VIEW CustomerSupportTickets AS
 SELECT 
     CS.SupportID,
@@ -109,7 +103,6 @@ SELECT * FROM CustomerSupportTickets;
 
 
 
--- Seats Availability by Venue
 CREATE VIEW SeatsAvailabilityByVenue AS
 SELECT 
     V.VenueID,
@@ -125,16 +118,3 @@ JOIN
 GROUP BY 
     V.VenueID, V.Name, S.Category;
 SELECT * FROM SeatsAvailabilityByVenue;
-
-
-
-
--- Table Views
-SELECT + FROM Users;
-SELECT * FROM Venue;
-SELECT * FROM Events;
-SELECT * FROM Seat;
-SELECT * FROM Booking;
-SELECT * FROM Ticket;
-SELECT * FROM Payment;
-SELECT * FROM CustomerSupport;
