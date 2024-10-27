@@ -1,4 +1,5 @@
--- Regular Users
+-- INSERTION OPERATIONS
+-- Regular Sample Inputs
 INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (1, 'Alice', 'alice@example.com', '1234567890', 'password123', 'Regular');
 INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (2, 'Bob', 'bob@example.com', '1234567891', 'password123', 'Regular');
 INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (3, 'Charlie', 'charlie@example.com', '1234567892', 'password123', 'Regular');
@@ -7,7 +8,9 @@ INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES 
 INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (6, 'Fiona', 'fiona@example.com', '1234567895', 'password123', 'Regular');
 INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (7, 'George', 'george@example.com', '1234567896', 'password123', 'Regular');
 INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (8, 'Hannah', 'hannah@example.com', '1234567897', 'password123', 'Regular');
--- Organizers
+
+
+-- Organizer Sample Inputs
 INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (9, 'Ivy', 'ivy@example.com', '1234567898', 'password123', 'Organizer');
 INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (10, 'Jake', 'jake@example.com', '1234567899', 'password123', 'Organizer');
 INSERT INTO Users (UserID, Name, Email, PhoneNumber, Password, UserType) VALUES (11, 'Kara', 'kara@example.com', '1234567800', 'password123', 'Organizer');
@@ -46,7 +49,8 @@ VALUES (8, 'Sports Event: City Cup', 'Exciting city cup matches!', 'Sports', TO_
 
 
 
--- Seat Sample Inputs for Grand Theater
+-- Seat Sample Inputs
+-- Venue_1 Sample Inputs
 INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
 VALUES (1, 1, 'R1S1', 'Regular', 'Y');
 INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
@@ -63,7 +67,9 @@ INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability)
 VALUES (7, 1, 'V1S1', 'VIP', 'Y');
 INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
 VALUES (8, 1, 'V1S2', 'VIP', 'Y');
--- Seat Sample Inputs for Skyline Arena
+
+
+-- Venue_2 Sample Inputs
 INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
 VALUES (9, 2, 'R2S1', 'Regular', 'Y');
 INSERT INTO Seat (SeatID, VenueID, SeatNumber, Category, Availability) 
@@ -147,7 +153,7 @@ VALUES (8, 8, 25.00, 'UPI', 'Failed', SYSDATE, SYSTIMESTAMP);
 
 
 
--- CustomerSupport sample Inputs
+-- CustomerSupport Sample Inputs
 INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
 VALUES (1, 1, 'Feedback on the booking process.', SYSDATE, 'Resolved', 'Great experience!');
 INSERT INTO CustomerSupport (SupportID, UserID, IssueDescription, IssueDate, ResolutionStatus, Feedback) 
