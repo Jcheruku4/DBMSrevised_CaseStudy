@@ -3,7 +3,9 @@ CREATE VIEW UserBookingOverview AS
 SELECT 
     U.UserID,
     U.Name AS UserName,
+    U.Email AS UserEmail,
     E.Title AS EventTitle,
+    E.EventDate,
     B.BookingDate,
     B.TotalAmount,
     B.BookingStatus
@@ -13,6 +15,7 @@ JOIN
     Booking B ON U.UserID = B.UserID
 JOIN 
     Events E ON B.EventID = E.EventID;
+SELECT * FROM UserBookingOverview;
 
 
 
@@ -23,14 +26,19 @@ SELECT
     E.EventID,
     E.Title AS EventTitle,
     E.Description,
+    E.Category AS EventCategory,
     E.EventDate,
     E.EventTime,
     V.Name AS VenueName,
-    V.Location AS VenueLocation
+    V.Location AS VenueLocation,
+    U.Name AS OrganizerName
 FROM 
     Events E
 JOIN 
-    Venue V ON E.VenueID = V.VenueID;
+    Venue V ON E.VenueID = V.VenueID
+JOIN 
+    Users U ON E.OrganizerID = U.UserID;
+SELECT * FROM EventDetailsWithVenue;
 
 
 
@@ -40,14 +48,17 @@ CREATE VIEW BookingSummary AS
 SELECT 
     E.EventID,
     E.Title AS EventTitle,
+    E.EventDate,
     COUNT(B.BookingID) AS TotalBookings,
-    SUM(B.TotalAmount) AS TotalRevenue
+    SUM(B.TotalAmount) AS TotalRevenue,
+    AVG(B.TotalAmount) AS AverageTicketPrice
 FROM 
     Events E
 LEFT JOIN 
     Booking B ON E.EventID = B.EventID
 GROUP BY 
-    E.EventID, E.Title;
+    E.EventID, E.Title, E.EventDate;
+SELECT * FROM BookingSummary;
 
 
 
@@ -57,6 +68,8 @@ CREATE VIEW PaymentStatusOverview AS
 SELECT 
     P.PaymentID,
     B.BookingID,
+    U.Name AS UserName,
+    U.Email AS UserEmail,
     P.Amount,
     P.PaymentMethod,
     P.Status AS PaymentStatus,
@@ -65,7 +78,10 @@ SELECT
 FROM 
     Payment P
 JOIN 
-    Booking B ON P.BookingID = B.BookingID;
+    Booking B ON P.BookingID = B.BookingID
+JOIN 
+    Users U ON B.UserID = U.UserID;
+SELECT * FROM PaymentStatusOverview;
 
 
 
@@ -75,14 +91,20 @@ CREATE VIEW CustomerSupportTickets AS
 SELECT 
     CS.SupportID,
     U.Name AS UserName,
+    U.Email AS UserEmail,
     CS.IssueDescription,
     CS.IssueDate,
     CS.ResolutionStatus,
-    CS.Feedback
+    CS.Feedback,
+    CASE 
+        WHEN CS.Feedback IS NOT NULL THEN 'Resolved' 
+        ELSE 'Pending' 
+    END AS FeedbackStatus
 FROM 
     CustomerSupport CS
 JOIN 
     Users U ON CS.UserID = U.UserID;
+SELECT * FROM CustomerSupportTickets;
 
 
 
@@ -92,10 +114,25 @@ CREATE VIEW SeatsAvailabilityByVenue AS
 SELECT 
     V.VenueID,
     V.Name AS VenueName,
-    S.SeatNumber,
-    S.Category,
-    S.Availability
+    COUNT(S.SeatID) AS TotalSeats,
+    SUM(CASE WHEN S.Availability = 'Y' THEN 1 ELSE 0 END) AS AvailableSeats,
+    SUM(CASE WHEN S.Availability = 'N' THEN 1 ELSE 0 END) AS BookedSeats,
+    S.Category
 FROM 
     Venue V
 JOIN 
-    Seat S ON V.VenueID = S.VenueID;
+    Seat S ON V.VenueID = S.VenueID
+GROUP BY 
+    V.VenueID, V.Name, S.Category;
+SELECT * FROM SeatsAvailabilityByVenue;
+
+
+
+
+SELECT * FROM Venue;
+SELECT * FROM Events;
+SELECT * FROM Seat;
+SELECT * FROM Booking;
+SELECT * FROM Ticket;
+SELECT * FROM Payment;
+SELECT * FROM CustomerSupport;
