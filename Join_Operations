@@ -1,0 +1,68 @@
+-- JOIN OPERATIONS
+-- INNER JOIN
+SELECT U.UserID, U.Name AS UserName,
+COUNT(B.BookingID) AS TotalBookings,
+SUM(B.TotalAmount) AS TotalSpent
+FROM Users U
+INNER JOIN Booking B ON U.UserID = B.UserID
+GROUP BY U.UserID, U.Name
+ORDER BY TotalSpent DESC;
+
+
+SELECT E.EventID, E.Title, V.Name AS VenueName,
+COUNT(T.TicketID) AS TicketsSold
+FROM Events E
+INNER JOIN Venue V ON E.VenueID = V.VenueID
+INNER JOIN Ticket T ON E.EventID = T.EventID
+GROUP BY E.EventID, E.Title, V.Name
+ORDER BY TicketsSold DESC;
+
+
+
+
+-- LEFT JOIN
+SELECT U.UserID, U.Name AS UserName,
+COUNT(B.BookingID) AS TotalBookings
+FROM Users U
+LEFT JOIN Booking B ON U.UserID = B.UserID
+GROUP BY U.UserID, U.Name
+ORDER BY TotalBookings;
+
+
+SELECT V.VenueID, V.Name AS VenueName,
+COUNT(E.EventID) AS TotalEvents
+FROM Venue V
+LEFT JOIN Events E ON V.VenueID = E.VenueID
+GROUP BY V.VenueID, V.Name
+ORDER BY TotalEvents DESC;
+
+
+
+
+-- RIGHT JOIN
+SELECT E.EventID, E.Title, V.Name AS VenueName
+FROM Events E
+RIGHT JOIN Venue V ON E.VenueID = V.VenueID
+ORDER BY E.EventID;
+
+
+SELECT T.TicketID, T.Price, B.BookingID
+FROM Ticket T
+RIGHT JOIN Booking B ON T.BookingID = B.BookingID
+ORDER BY T.TicketID;
+
+
+
+
+-- FULL JOIN
+SELECT U.UserID, U.Name AS UserName,
+B.BookingID, B.TotalAmount
+FROM Users U
+FULL OUTER JOIN Booking B ON U.UserID = B.UserID
+ORDER BY U.UserID;
+
+
+SELECT E.EventID, E.Title,V.Name AS VenueName
+FROM Events E
+FULL OUTER JOIN Venue V ON E.VenueID = V.VenueID
+ORDER BY E.EventID;
