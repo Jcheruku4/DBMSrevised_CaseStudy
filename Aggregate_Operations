@@ -1,0 +1,46 @@
+-- AGGREGATE OPERATIONS
+-- SUM OPERATOR
+SELECT SUM(TotalAmount) AS TotalCollected
+FROM Booking;
+SELECT SUM(P.Amount) AS TotalSuccessfulPayments
+FROM Payment P
+WHERE P.Status = 'Success';
+
+
+
+
+-- COUNT OPERATOR
+SELECT COUNT(*) AS TotalUsers
+FROM Users;
+SELECT U.Name AS CustomerName,
+COUNT(B.BookingID) AS BookingCount
+FROM Users U
+LEFT JOIN Booking B ON U.UserID = B.UserID
+GROUP BY U.Name;
+
+
+
+
+-- MIN OPERATOR
+SELECT MIN(Price) AS MinimumTicketPrice
+FROM Ticket;
+SELECT MIN(BookingDate) AS EarliestBooking
+FROM Booking;
+
+
+
+
+-- MAX OPERATOR
+SELECT MAX(Price) AS MaximumTicketPrice
+FROM Ticket;
+SELECT MAX(BookingDate) AS LatestBooking
+FROM Booking;
+
+
+
+
+-- AVG OPERATOR
+SELECT AVG(P.Amount) AS AveragePayment
+FROM Payment P;
+SELECT AVG(B.TotalAmount) AS AverageBookingAmount
+FROM Booking B;
