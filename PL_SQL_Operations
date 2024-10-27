@@ -1,5 +1,4 @@
 -- BEFORE Triggers
-
 -- Enforce EventDate is not in the past
 CREATE OR REPLACE TRIGGER trg_before_event_insert
 BEFORE INSERT ON Events
@@ -10,7 +9,6 @@ BEGIN
     END IF;
 END;
 /
-
 -- Ensure TotalAmount in Booking is positive
 CREATE OR REPLACE TRIGGER trg_before_booking_insert
 BEFORE INSERT ON Booking
@@ -22,8 +20,10 @@ BEGIN
 END;
 /
 
--- AFTER Triggers
 
+
+
+-- AFTER Triggers
 -- Cascade cancel status to bookings when event is cancelled
 CREATE OR REPLACE TRIGGER trg_after_event_cancel
 AFTER UPDATE OF Status ON Events
@@ -35,7 +35,6 @@ BEGIN
     WHERE EventID = :OLD.EventID;
 END;
 /
-
 -- Log welcome message after user signup
 CREATE OR REPLACE TRIGGER trg_after_user_signup
 AFTER INSERT ON Users
@@ -45,8 +44,10 @@ BEGIN
 END;
 /
 
--- Row-Level Triggers
 
+
+
+-- Row-Level Triggers
 -- Log seat availability changes
 CREATE OR REPLACE TRIGGER trg_seat_availability_change
 AFTER UPDATE OF Availability ON Seat
@@ -55,7 +56,6 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Seat ' || :OLD.SeatNumber || ' at Venue ' || :OLD.VenueID || ' availability changed to ' || :NEW.Availability);
 END;
 /
-
 -- Log booking status changes
 CREATE OR REPLACE TRIGGER trg_booking_status_update
 AFTER UPDATE OF BookingStatus ON Booking
@@ -65,8 +65,10 @@ BEGIN
 END;
 /
 
--- Statement-Level Triggers
 
+
+
+-- Statement-Level Triggers
 -- Log total seats updated after bulk update
 CREATE OR REPLACE TRIGGER trg_after_seat_update
 AFTER UPDATE ON Seat
@@ -74,7 +76,6 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT || ' seats were updated in total.');
 END;
 /
-
 -- Log count of customer support issues deleted in bulk
 CREATE OR REPLACE TRIGGER trg_after_support_bulk_delete
 AFTER DELETE ON CustomerSupport
@@ -83,8 +84,10 @@ BEGIN
 END;
 /
 
--- Set-Oriented Triggers
 
+
+
+-- Set-Oriented Triggers
 -- Log count of new users added in bulk
 CREATE OR REPLACE TRIGGER trg_after_bulk_user_insert
 AFTER INSERT ON Users
@@ -94,7 +97,6 @@ BEGIN
     END IF;
 END;
 /
-
 -- Log count of payment status updates in bulk
 CREATE OR REPLACE TRIGGER trg_after_payment_bulk_update
 AFTER UPDATE OF Status ON Payment
