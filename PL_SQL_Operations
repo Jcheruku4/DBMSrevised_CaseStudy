@@ -132,6 +132,7 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('Total Sales for ' || v_organizer_name || ': ' || v_total_sales);
     END LOOP;
 END;
+/
 
 
 DECLARE
@@ -151,6 +152,7 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('Total Seats Booked for ' || v_venue_name || ': ' || v_total_seats);
     END LOOP;
 END;
+/
 
 
 
@@ -173,6 +175,7 @@ BEGIN
     END LOOP;
     CLOSE c_user_bookings;
 END;
+/
 
 
 DECLARE
@@ -192,3 +195,4 @@ BEGIN
     END LOOP;
     CLOSE c_event_ticket_prices;
 END;
+/
