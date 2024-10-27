@@ -14,6 +14,9 @@ JOIN
 JOIN 
     Events E ON B.EventID = E.EventID;
 
+
+
+
 -- Event Details with Venue
 CREATE VIEW EventDetailsWithVenue AS
 SELECT 
@@ -29,6 +32,9 @@ FROM
 JOIN 
     Venue V ON E.VenueID = V.VenueID;
 
+
+
+
 -- Booking Summary
 CREATE VIEW BookingSummary AS
 SELECT 
@@ -42,6 +48,9 @@ LEFT JOIN
     Booking B ON E.EventID = B.EventID
 GROUP BY 
     E.EventID, E.Title;
+
+
+
 
 -- Payment Status Overview
 CREATE VIEW PaymentStatusOverview AS
@@ -58,6 +67,9 @@ FROM
 JOIN 
     Booking B ON P.BookingID = B.BookingID;
 
+
+
+
 -- Customer Support Tickets
 CREATE VIEW CustomerSupportTickets AS
 SELECT 
@@ -72,6 +84,9 @@ FROM
 JOIN 
     Users U ON CS.UserID = U.UserID;
 
+
+
+
 -- Seats Availability by Venue
 CREATE VIEW SeatsAvailabilityByVenue AS
 SELECT 
@@ -84,10 +99,3 @@ FROM
     Venue V
 JOIN 
     Seat S ON V.VenueID = S.VenueID;
-
--- Commands to View Each Table
-SELECT * FROM UserBookingOverview;
-SELECT * FROM EventDetailsWithVenue;
-SELECT * FROM BookingSummary;
-SELECT * FROM PaymentStatusOverview;
-SELECT * FROM CustomerSupportTickets;
