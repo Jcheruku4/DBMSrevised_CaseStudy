@@ -1,5 +1,6 @@
+-- PL/SQL OPERATIONS
+-- TRIGGERS
 -- BEFORE Triggers
--- Enforce EventDate is not in the past
 CREATE OR REPLACE TRIGGER trg_before_event_insert
 BEFORE INSERT ON Events
 FOR EACH ROW
@@ -9,7 +10,8 @@ BEGIN
     END IF;
 END;
 /
--- Ensure TotalAmount in Booking is positive
+
+
 CREATE OR REPLACE TRIGGER trg_before_booking_insert
 BEFORE INSERT ON Booking
 FOR EACH ROW
@@ -24,7 +26,6 @@ END;
 
 
 -- AFTER Triggers
--- Cascade cancel status to bookings when event is cancelled
 CREATE OR REPLACE TRIGGER trg_after_event_cancel
 AFTER UPDATE OF Status ON Events
 FOR EACH ROW
@@ -35,12 +36,14 @@ BEGIN
     WHERE EventID = :OLD.EventID;
 END;
 /
--- Log welcome message after user signup
+
+
 CREATE OR REPLACE TRIGGER trg_after_user_signup
 AFTER INSERT ON Users
 FOR EACH ROW
 BEGIN
-    DBMS_OUTPUT.PUT_LINE('Welcome, ' || :NEW.Name || '! Your account has been created.');
+    DBMS_OUTPUT.PUT_LINE('Account created successfully.');
+    DBMS_OUTPUT.PUT_LINE('Welcome, ' || :NEW.Name || '!');
 END;
 /
 
@@ -48,7 +51,6 @@ END;
 
 
 -- Row-Level Triggers
--- Log seat availability changes
 CREATE OR REPLACE TRIGGER trg_seat_availability_change
 AFTER UPDATE OF Availability ON Seat
 FOR EACH ROW
@@ -56,7 +58,8 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Seat ' || :OLD.SeatNumber || ' at Venue ' || :OLD.VenueID || ' availability changed to ' || :NEW.Availability);
 END;
 /
--- Log booking status changes
+
+
 CREATE OR REPLACE TRIGGER trg_booking_status_update
 AFTER UPDATE OF BookingStatus ON Booking
 FOR EACH ROW
@@ -69,14 +72,14 @@ END;
 
 
 -- Statement-Level Triggers
--- Log total seats updated after bulk update
 CREATE OR REPLACE TRIGGER trg_after_seat_update
 AFTER UPDATE ON Seat
 BEGIN
     DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT || ' seats were updated in total.');
 END;
 /
--- Log count of customer support issues deleted in bulk
+
+
 CREATE OR REPLACE TRIGGER trg_after_support_bulk_delete
 AFTER DELETE ON CustomerSupport
 BEGIN
@@ -88,7 +91,6 @@ END;
 
 
 -- Set-Oriented Triggers
--- Log count of new users added in bulk
 CREATE OR REPLACE TRIGGER trg_after_bulk_user_insert
 AFTER INSERT ON Users
 BEGIN
@@ -97,7 +99,8 @@ BEGIN
     END IF;
 END;
 /
--- Log count of payment status updates in bulk
+
+
 CREATE OR REPLACE TRIGGER trg_after_payment_bulk_update
 AFTER UPDATE OF Status ON Payment
 BEGIN
@@ -106,3 +109,86 @@ BEGIN
     END IF;
 END;
 /
+
+
+
+
+-- CURSORS
+-- IMPLICIT CURSORS
+DECLARE
+    CURSOR c_total_sales IS
+        SELECT U.Name AS OrganizerName, SUM(T.Price) AS TotalSales
+        FROM Users U
+        JOIN Events E ON U.UserID = E.OrganizerID
+        JOIN Ticket T ON E.EventID = T.EventID
+        JOIN Booking B ON T.BookingID = B.BookingID
+        GROUP BY U.Name;
+    v_organizer_name Users.Name%TYPE;
+    v_total_sales NUMBER;
+BEGIN
+    FOR rec IN c_total_sales LOOP
+        v_organizer_name := rec.OrganizerName;
+        v_total_sales := rec.TotalSales;
+        DBMS_OUTPUT.PUT_LINE('Total Sales for ' || v_organizer_name || ': ' || v_total_sales);
+    END LOOP;
+END;
+
+
+DECLARE
+    CURSOR c_total_seats IS
+        SELECT V.Name AS VenueName, COUNT(T.SeatID) AS TotalSeatsBooked
+        FROM Venue V
+        JOIN Events E ON V.VenueID = E.VenueID
+        JOIN Ticket T ON E.EventID = T.EventID
+        JOIN Booking B ON T.BookingID = B.BookingID
+        GROUP BY V.Name;
+    v_venue_name Venue.Name%TYPE;
+    v_total_seats NUMBER;
+BEGIN
+    FOR rec IN c_total_seats LOOP
+        v_venue_name := rec.VenueName;
+        v_total_seats := rec.TotalSeatsBooked;
+        DBMS_OUTPUT.PUT_LINE('Total Seats Booked for ' || v_venue_name || ': ' || v_total_seats);
+    END LOOP;
+END;
+
+
+
+
+-- EXPLICIT CURSORS
+DECLARE
+    CURSOR c_user_bookings IS
+        SELECT U.Name AS CustomerName, COUNT(B.BookingID) AS TotalBookings
+        FROM Users U
+        LEFT JOIN Booking B ON U.UserID = B.UserID
+        GROUP BY U.Name;
+    v_customer_name Users.Name%TYPE;
+    v_total_bookings NUMBER;
+BEGIN
+    OPEN c_user_bookings;
+    LOOP
+        FETCH c_user_bookings INTO v_customer_name, v_total_bookings;
+        EXIT WHEN c_user_bookings%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Total Bookings for ' || v_customer_name || ': ' || v_total_bookings);
+    END LOOP;
+    CLOSE c_user_bookings;
+END;
+
+
+DECLARE
+    CURSOR c_event_ticket_prices IS
+        SELECT E.Title AS EventTitle, AVG(T.Price) AS AverageTicketPrice
+        FROM Events E
+        JOIN Ticket T ON E.EventID = T.EventID
+        GROUP BY E.Title;
+    v_event_title Events.Title%TYPE;
+    v_average_price NUMBER;
+BEGIN
+    OPEN c_event_ticket_prices;
+    LOOP
+        FETCH c_event_ticket_prices INTO v_event_title, v_average_price;
+        EXIT WHEN c_event_ticket_prices%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Average Ticket Price for ' || v_event_title || ': ' || v_average_price);
+    END LOOP;
+    CLOSE c_event_ticket_prices;
+END;
