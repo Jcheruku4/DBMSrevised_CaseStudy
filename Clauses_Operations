@@ -1,0 +1,52 @@
+-- CLAUSES OPERATIONS
+-- MIN OPERATOR
+SELECT Events.EventID, MIN(Ticket.Price) AS MinTicketPrice
+FROM Ticket
+JOIN Events ON Ticket.EventID = Events.EventID
+WHERE Events.Category = 'Concert'
+GROUP BY Events.EventID
+ORDER BY MinTicketPrice ASC;
+
+
+
+
+-- MAX OPERATOR
+SELECT Events.EventID, MAX(Ticket.Price) AS MaxTicketPrice
+FROM Ticket
+JOIN Events ON Ticket.EventID = Events.EventID
+WHERE Events.Category = 'Concert'
+GROUP BY Events.EventID
+ORDER BY MaxTicketPrice DESC;
+
+
+
+
+-- SUM OPERATOR
+SELECT Events.EventID, SUM(Ticket.Price) AS TotalTicketPrice
+FROM Ticket
+JOIN Events ON Ticket.EventID = Events.EventID
+WHERE Events.Category = 'Concert'
+GROUP BY Events.EventID
+ORDER BY TotalTicketPrice DESC;
+
+
+
+
+-- AVG OPERATOR
+SELECT Events.EventID, AVG(Ticket.Price) AS AverageTicketPrice
+FROM Ticket
+JOIN Events ON Ticket.EventID = Events.EventID
+WHERE Events.Category = 'Concert'
+GROUP BY Events.EventID
+ORDER BY AverageTicketPrice ASC;
+
+
+
+
+-- COUNT OPERATOR
+SELECT Events.EventID, COUNT(Ticket.TicketID) AS TicketsSold
+FROM Ticket
+JOIN Events ON Ticket.EventID = Events.EventID
+WHERE Events.Category = 'Concert'
+GROUP BY Events.EventID
+ORDER BY TicketsSold DESC;
