@@ -1,0 +1,22 @@
+-- 1. Retrieve details of events that are in the 'Movie' category.
+SELECT EventID, Title, Description, EventDate, EventTime
+FROM Events
+WHERE Category IN ('Movie');
+
+-- 2. Get a list of users who have booked tickets for events happening in 'Skyline Arena'.
+SELECT u.UserID, u.Name, b.BookingID, e.Title, e.EventDate
+FROM Users u
+JOIN Booking b ON u.UserID = b.UserID
+JOIN Events e ON b.EventID = e.EventID
+WHERE e.VenueID IN (SELECT VenueID FROM Venue WHERE Name = 'Skyline Arena');
+
+-- 3. Find all users who have not made any bookings for 'Live Concert: Rock Legends'.
+SELECT UserID, Name, Email
+FROM Users
+WHERE UserID NOT IN (SELECT UserID FROM Booking WHERE EventID IN 
+    (SELECT EventID FROM Events WHERE Title = 'Live Concert: Rock Legends'));
+
+-- 4. List of events that are not in the 'Concert' category.
+SELECT EventID, Title, Description, EventDate, EventTime
+FROM Events
+WHERE Category NOT IN ('Concert');
