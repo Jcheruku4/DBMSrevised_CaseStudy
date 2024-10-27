@@ -1,164 +1,153 @@
--- ROW-LEVEL TRIGGERS
--- Track user registration details
-CREATE OR REPLACE TRIGGER trg_log_new_user
+-- ROW-LEVEL TRIGGERS (Simplified)
+-- 1. Track new user registrations
+CREATE OR REPLACE TRIGGER trg_new_user_log
 AFTER INSERT ON Users
 FOR EACH ROW
 BEGIN
     DBMS_OUTPUT.PUT_LINE('New user registered: ' || :NEW.Name || 
-                        ' with email: ' || :NEW.Email);
+                        ' as ' || :NEW.UserType || ' user');
 END;
 /
--- Update seat availability after booking
-CREATE OR REPLACE TRIGGER trg_update_seat_status
-AFTER INSERT ON Ticket
+
+-- 2. Track seat status changes
+CREATE OR REPLACE TRIGGER trg_seat_status
+AFTER UPDATE ON Seat
 FOR EACH ROW
 BEGIN
-    UPDATE Seat
-    SET Availability = 'N'
-    WHERE SeatID = :NEW.SeatID;
-    DBMS_OUTPUT.PUT_LINE('Seat ' || :NEW.SeatID || ' marked as booked');
-END;
-/
-
-
-
-
--- STATEMENT-LEVEL TRIGGERS
--- Check business hours for bookings
-CREATE OR REPLACE TRIGGER trg_business_hours_check
-BEFORE INSERT OR UPDATE ON Booking
-BEGIN
-    IF TO_NUMBER(TO_CHAR(SYSDATE, 'HH24')) NOT BETWEEN 9 AND 22 THEN
-        RAISE_APPLICATION_ERROR(-20001, 'Bookings allowed only between 9 AM and 10 PM');
+    IF :OLD.Availability != :NEW.Availability THEN
+        DBMS_OUTPUT.PUT_LINE('Seat ' || :NEW.SeatNumber || ' at Venue ' || 
+                            :NEW.VenueID || ' is now ' || 
+                            CASE :NEW.Availability 
+                                WHEN 'Y' THEN 'Available'
+                                ELSE 'Booked'
+                            END);
     END IF;
 END;
 /
--- Log daily event count
-CREATE OR REPLACE TRIGGER trg_daily_event_count
-AFTER INSERT ON Events
-DECLARE
-    v_count NUMBER;
-BEGIN
-    SELECT COUNT(*)
-    INTO v_count
-    FROM Events
-    WHERE TRUNC(EventDate) = TRUNC(SYSDATE);
-    DBMS_OUTPUT.PUT_LINE('Total events scheduled for today: ' || v_count);
-END;
-/
 
-
-
-
--- SET-ORIENTED TRIGGERS
--- Monitor venue capacity
-CREATE OR REPLACE TRIGGER trg_check_venue_capacity
+-- STATEMENT-LEVEL TRIGGERS (Simplified)
+-- 3. Basic booking validation (Modified to check 30 mins before event)
+CREATE OR REPLACE TRIGGER trg_basic_booking_check
 BEFORE INSERT ON Booking
 FOR EACH ROW
 DECLARE
-    v_current_bookings NUMBER;
-    v_venue_capacity NUMBER;
-    v_venue_id NUMBER;
+    v_event_time TIMESTAMP;
 BEGIN
-    -- Get venue ID for the event
-    SELECT VenueID INTO v_venue_id
+    -- Retrieve the event time for the event being booked
+    SELECT EventTime INTO v_event_time
     FROM Events
     WHERE EventID = :NEW.EventID;
-    -- Get venue capacity
-    SELECT Capacity INTO v_venue_capacity
-    FROM Venue
-    WHERE VenueID = v_venue_id;
-    -- Count current bookings
-    SELECT COUNT(*) INTO v_current_bookings
-    FROM Booking b
-    WHERE b.EventID = :NEW.EventID
-    AND b.BookingStatus = 'Confirmed';
-    IF v_current_bookings >= v_venue_capacity THEN
-        RAISE_APPLICATION_ERROR(-20002, 'Venue capacity exceeded');
+
+    -- Check if the booking is being made within 30 minutes of the event time
+    IF v_event_time <= SYSTIMESTAMP + INTERVAL '30' MINUTE THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Bookings are not allowed within 30 minutes before the event starts.');
     END IF;
 END;
 /
--- Track multiple ticket bookings
-CREATE OR REPLACE TRIGGER trg_multiple_tickets_check
+
+-- 4. Event count logger
+CREATE OR REPLACE TRIGGER trg_event_counter
+AFTER INSERT OR DELETE ON Events
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count FROM Events WHERE Status = 'Active';
+    DBMS_OUTPUT.PUT_LINE('Total active events: ' || v_count);
+END;
+/
+
+-- SET-ORIENTED TRIGGERS (Simplified)
+-- 5. Simple venue capacity check
+CREATE OR REPLACE TRIGGER trg_simple_capacity_check
+BEFORE INSERT ON Booking
+FOR EACH ROW
+DECLARE
+    v_booked_count NUMBER;
+    v_max_capacity NUMBER;
+BEGIN
+    -- Get venue capacity and current bookings
+    SELECT COUNT(*) INTO v_booked_count
+    FROM Booking b
+    WHERE b.EventID = :NEW.EventID
+    AND b.BookingStatus = 'Confirmed';
+    
+    SELECT v.Capacity INTO v_max_capacity
+    FROM Events e
+    JOIN Venue v ON e.VenueID = v.VenueID
+    WHERE e.EventID = :NEW.EventID;
+    
+    IF v_booked_count >= v_max_capacity THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Venue is fully booked');
+    END IF;
+END;
+/
+
+-- 6. Basic ticket limit check
+CREATE OR REPLACE TRIGGER trg_ticket_limit
 BEFORE INSERT ON Ticket
 FOR EACH ROW
 DECLARE
     v_ticket_count NUMBER;
 BEGIN
-    -- Count tickets for this booking
     SELECT COUNT(*) INTO v_ticket_count
     FROM Ticket
     WHERE BookingID = :NEW.BookingID;
-    IF v_ticket_count >= 10 THEN
-        RAISE_APPLICATION_ERROR(-20003, 'Maximum 10 tickets per booking allowed');
+    
+    IF v_ticket_count >= 5 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Maximum 5 tickets per booking allowed');
     END IF;
 END;
 /
 
-
-
-
--- BEFORE TRIGGERS
--- Validate event dates
-CREATE OR REPLACE TRIGGER trg_validate_event_date
-BEFORE INSERT OR UPDATE ON Events
+-- BEFORE TRIGGERS (Simplified)
+-- 7. Basic event date validation
+CREATE OR REPLACE TRIGGER trg_event_date_check
+BEFORE INSERT ON Events
 FOR EACH ROW
 BEGIN
     IF :NEW.EventDate < TRUNC(SYSDATE) THEN
-        RAISE_APPLICATION_ERROR(-20004, 'Event date cannot be in the past');
-    END IF;
-    IF :NEW.EventDate > ADD_MONTHS(SYSDATE, 6) THEN
-        RAISE_APPLICATION_ERROR(-20005, 'Cannot schedule events more than 6 months ahead');
+        RAISE_APPLICATION_ERROR(-20004, 'Cannot create events in the past');
     END IF;
 END;
 /
--- Set default payment status
-CREATE OR REPLACE TRIGGER trg_set_payment_defaults
-BEFORE INSERT ON Payment
+
+-- 8. Default booking status setter
+CREATE OR REPLACE TRIGGER trg_booking_defaults
+BEFORE INSERT ON Booking
 FOR EACH ROW
 BEGIN
-    IF :NEW.PaymentDate IS NULL THEN
-        :NEW.PaymentDate := SYSDATE;
+    IF :NEW.BookingStatus IS NULL THEN
+        :NEW.BookingStatus := 'Confirmed';
     END IF;
-    IF :NEW.PaymentTime IS NULL THEN
-        :NEW.PaymentTime := SYSTIMESTAMP;
+    IF :NEW.BookingDate IS NULL THEN
+        :NEW.BookingDate := TRUNC(SYSDATE);
     END IF;
-    DBMS_OUTPUT.PUT_LINE('Payment defaults set for payment ID: ' || :NEW.PaymentID);
 END;
 /
 
-
-
-
--- AFTER TRIGGERS
--- Display booking confirmation
-CREATE OR REPLACE TRIGGER trg_booking_confirmation
+-- AFTER TRIGGERS (Simplified)
+-- 9. Booking notification
+CREATE OR REPLACE TRIGGER trg_booking_notify
 AFTER INSERT ON Booking
 FOR EACH ROW
 DECLARE
-    v_event_title Events.Title%TYPE;
+    v_event_name Events.Title%TYPE;
 BEGIN
-    SELECT Title INTO v_event_title
+    SELECT Title INTO v_event_name
     FROM Events
     WHERE EventID = :NEW.EventID;
-    DBMS_OUTPUT.PUT_LINE('Booking Confirmed!' || CHR(10) ||
-                        'Booking ID: ' || :NEW.BookingID || CHR(10) ||
-                        'Event: ' || v_event_title || CHR(10) ||
-                        'Amount: ₹' || :NEW.TotalAmount);
+    
+    DBMS_OUTPUT.PUT_LINE('New booking confirmed for event: ' || v_event_name || 
+                        ' Amount: ₹' || :NEW.TotalAmount);
 END;
 /
--- Monitor payment status
-CREATE OR REPLACE TRIGGER trg_payment_monitor
+
+-- 10. Payment logging
+CREATE OR REPLACE TRIGGER trg_payment_log
 AFTER INSERT ON Payment
 FOR EACH ROW
 BEGIN
-    DBMS_OUTPUT.PUT_LINE(
-        CASE :NEW.Status
-            WHEN 'Success' THEN 
-                'Payment of ₹' || :NEW.Amount || ' successful via ' || :NEW.PaymentMethod
-            ELSE 
-                'Payment of ₹' || :NEW.Amount || ' failed. Please retry.'
-        END
-    );
+    DBMS_OUTPUT.PUT_LINE('Payment processed - Amount: ₹' || :NEW.Amount || 
+                        ' Status: ' || :NEW.Status);
 END;
 /
