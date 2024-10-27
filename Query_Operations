@@ -1,3 +1,4 @@
+-- QUERY OPERATIONS
 -- IN OPERATOR
 SELECT EventID, Title, Description, EventDate, EventTime
 FROM Events
@@ -107,3 +108,61 @@ WHERE B.BookingID NOT IN (SELECT BookingID FROM Payment);
 
 
 -- EXCEPT OPERATOR
+SELECT U.Name AS CustomerName
+FROM Users U
+JOIN Booking B ON U.UserID = B.UserID
+JOIN Payment P ON B.BookingID = P.BookingID
+WHERE P.PaymentMethod <> 'UPI'
+MINUS
+SELECT U.Name AS CustomerName
+FROM Users U
+JOIN Booking B ON U.UserID = B.UserID
+JOIN Payment P ON B.BookingID = P.BookingID
+WHERE P.PaymentMethod = 'UPI';
+
+
+SELECT U.Name AS CustomerName
+FROM Users U
+JOIN Booking B ON U.UserID = B.UserID
+JOIN Ticket T ON B.BookingID = T.BookingID
+JOIN Seat S ON T.SeatID = S.SeatID
+WHERE S.Category <> 'Regular'
+MINUS
+SELECT U.Name AS CustomerName
+FROM Users U
+JOIN Booking B ON U.UserID = B.UserID
+JOIN Ticket T ON B.BookingID = T.BookingID
+JOIN Seat S ON T.SeatID = S.SeatID
+WHERE S.Category = 'Regular';
+
+
+
+
+-- INTERSECT OPERATOR
+SELECT U.Name AS CustomerName, CS.Feedback
+FROM Users U
+JOIN CustomerSupport CS ON U.UserID = CS.UserID
+WHERE U.Name IN (
+    SELECT U.Name
+    FROM Users U
+    JOIN Booking B ON U.UserID = B.UserID
+    INTERSECT
+    SELECT U.Name
+    FROM Users U
+    JOIN CustomerSupport CS ON U.UserID = CS.UserID
+);
+
+
+SELECT U.Name AS CustomerName, P.PaymentMethod, P.Amount
+FROM Users U
+JOIN Booking B ON U.UserID = B.UserID
+JOIN Payment P ON B.BookingID = P.BookingID
+WHERE U.Name IN (
+    SELECT U.Name
+    FROM Users U
+    JOIN Booking B ON U.UserID = B.UserID
+    INTERSECT
+    SELECT U.Name
+    FROM Users U
+    JOIN Payment P ON U.UserID = (SELECT B.UserID FROM Booking B WHERE B.BookingID = P.BookingID)
+);
