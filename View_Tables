@@ -129,6 +129,8 @@ SELECT * FROM SeatsAvailabilityByVenue;
 
 
 
+-- Table Views
+SELECT + FROM Users;
 SELECT * FROM Venue;
 SELECT * FROM Events;
 SELECT * FROM Seat;
