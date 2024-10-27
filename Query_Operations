@@ -1,22 +1,109 @@
--- 1. Retrieve details of events that are in the 'Movie' category.
+-- IN OPERATOR
 SELECT EventID, Title, Description, EventDate, EventTime
 FROM Events
 WHERE Category IN ('Movie');
 
--- 2. Get a list of users who have booked tickets for events happening in 'Skyline Arena'.
+
 SELECT u.UserID, u.Name, b.BookingID, e.Title, e.EventDate
 FROM Users u
 JOIN Booking b ON u.UserID = b.UserID
 JOIN Events e ON b.EventID = e.EventID
 WHERE e.VenueID IN (SELECT VenueID FROM Venue WHERE Name = 'Skyline Arena');
 
--- 3. Find all users who have not made any bookings for 'Live Concert: Rock Legends'.
+
+
+
+-- NOT IN OPERATOR
 SELECT UserID, Name, Email
 FROM Users
 WHERE UserID NOT IN (SELECT UserID FROM Booking WHERE EventID IN 
     (SELECT EventID FROM Events WHERE Title = 'Live Concert: Rock Legends'));
 
--- 4. List of events that are not in the 'Concert' category.
+
 SELECT EventID, Title, Description, EventDate, EventTime
 FROM Events
 WHERE Category NOT IN ('Concert');
+
+
+
+
+-- ANY OPERATOR
+SELECT U.Name AS UserName, B.TotalAmount AS BookingAmount
+FROM Users U
+JOIN Booking B ON U.UserID = B.UserID
+WHERE B.TotalAmount > ANY (SELECT Price FROM Ticket);
+
+
+SELECT E.Title AS EventTitle, V.Name AS VenueName, V.Capacity
+FROM Events E
+JOIN Venue V ON E.VenueID = V.VenueID
+WHERE V.Capacity < ANY (SELECT Capacity FROM Venue);
+
+
+
+
+-- ALL OPERATOR
+SELECT U.Name AS UserName, B.TotalAmount AS BookingAmount
+FROM Users U
+JOIN Booking B ON U.UserID = B.UserID
+WHERE B.TotalAmount > ALL (SELECT Price FROM Ticket WHERE Price <= 10);
+
+
+SELECT E.Title AS EventTitle, V.Name AS VenueName, V.Capacity
+FROM Events E
+JOIN Venue V ON E.VenueID = V.VenueID
+WHERE V.Capacity > ALL (SELECT Capacity FROM Venue WHERE VenueID <> V.VenueID);
+
+
+
+
+-- UNION OPERATOR
+SELECT U.Name AS EntityName, 'User' AS EntityType, B.BookingStatus AS Status
+FROM Users U
+JOIN Booking B ON U.UserID = B.UserID
+UNION
+SELECT U.Name AS EntityName, 'User' AS EntityType, 'No Booking' AS Status
+FROM Users U
+WHERE U.UserID NOT IN (SELECT UserID FROM Booking);
+
+
+SELECT E.Title AS EntityName, COUNT(T.TicketID) AS TicketsSold
+FROM Events E
+LEFT JOIN Ticket T ON E.EventID = T.EventID
+GROUP BY E.Title
+UNION
+SELECT E.Title AS EntityName, 0 AS TicketsSold
+FROM Events E
+WHERE E.EventID NOT IN (SELECT EventID FROM Ticket);
+
+
+
+
+-- UNION ALL OPERATOR
+SELECT B.BookingID, B.BookingStatus, P.Status AS PaymentStatus
+FROM Booking B
+JOIN Payment P ON B.BookingID = P.BookingID
+WHERE P.Status = 'Success'
+UNION ALL
+SELECT B.BookingID, B.BookingStatus, 'Payment Pending' AS PaymentStatus
+FROM Booking B
+WHERE B.BookingID NOT IN (SELECT BookingID FROM Payment);
+
+
+SELECT E.Title AS EventName, U.Name AS CustomerName, P.PaymentMethod
+FROM Events E
+JOIN Booking B ON E.EventID = B.EventID
+JOIN Users U ON B.UserID = U.UserID
+JOIN Payment P ON B.BookingID = P.BookingID
+WHERE P.Status = 'Success'
+UNION ALL
+SELECT E.Title AS EventName, U.Name AS CustomerName, 'No Payment' AS PaymentMethod
+FROM Events E
+JOIN Booking B ON E.EventID = B.EventID
+JOIN Users U ON B.UserID = U.UserID
+WHERE B.BookingID NOT IN (SELECT BookingID FROM Payment);
+
+
+
+
+-- EXCEPT OPERATOR
